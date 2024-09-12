@@ -24,11 +24,25 @@ jobs:
         flutter-version: '3.13.0'
         channel: 'stable'
     
-    - name: Get dependencies
-      run: flutter pub get
-    
     - name: Enable Linux desktop
       run: flutter config --enable-linux-desktop
+    
+    - name: Create Linux configuration if not exists
+      run: |
+        if [ ! -d "linux" ]; then
+          echo "Linux configuration not found. Generating..."
+          flutter create --platforms=linux .
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git add .
+          git commit -m "Add Linux configuration files"
+          git push
+        else
+          echo "Linux configuration found."
+        fi
+    
+    - name: Get dependencies
+      run: flutter pub get
     
     - name: Build Linux app
       run: flutter build linux --release
